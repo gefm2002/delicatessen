@@ -18,7 +18,7 @@ interface SiteConfig {
 
 export default function AdminSiteConfig() {
   const { showToast } = useToast();
-  const [config, setConfig] = useState<SiteConfig | null>(null);
+  const [, setConfig] = useState<SiteConfig | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState<Partial<SiteConfig>>({

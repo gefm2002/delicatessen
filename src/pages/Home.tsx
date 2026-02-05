@@ -3,58 +3,12 @@ import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabasePublic';
 import { keysToCamel } from '../lib/mappers';
 import Button from '../components/Button';
-import ProductCard from '../components/ProductCard';
 import ProductCarousel from '../components/ProductCarousel';
 
 interface Category {
   id: string;
   name: string;
   slug: string;
-}
-
-// Componente para manejar imágenes con fallbacks
-function ProductImage({ src, alt, fallback }: { src: string | null; alt: string; fallback: string }) {
-  const [imgSrc, setImgSrc] = useState<string>(src || fallback);
-  const [hasError, setHasError] = useState(false);
-
-  useEffect(() => {
-    setImgSrc(src || fallback);
-    setHasError(false);
-  }, [src, fallback]);
-
-  const handleError = () => {
-    if (!hasError && imgSrc !== fallback) {
-      // Primera vez que falla, intentar con fallback
-      setHasError(true);
-      setImgSrc(fallback);
-    } else {
-      // Si el fallback también falla, mostrar placeholder
-      setHasError(true);
-    }
-  };
-
-  if (hasError && imgSrc === fallback) {
-    return (
-      <div className="w-full h-full flex items-center justify-center text-text-muted bg-bg-alt">
-        <div className="text-center">
-          <svg className="w-16 h-16 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-          </svg>
-          <p className="text-sm">Box</p>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <img
-      src={imgSrc}
-      alt={alt}
-      className="w-full h-full object-cover"
-      onError={handleError}
-      loading="lazy"
-    />
-  );
 }
 
 interface Promo {

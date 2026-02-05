@@ -7,7 +7,7 @@ import Button from './Button';
 export default function Header() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { items, removeItem, updateQuantity, updateWeight, total, clearCart } = useCart();
+  const { items, removeItem, updateQuantity, updateWeight, total } = useCart();
 
   return (
     <>

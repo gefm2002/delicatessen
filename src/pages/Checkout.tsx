@@ -317,7 +317,7 @@ export default function Checkout() {
                 type="submit"
                 size="lg"
                 className="w-full hidden lg:block"
-                onClick={(e) => {
+                onClick={() => {
                   const form = document.querySelector('form');
                   if (form) form.requestSubmit();
                 }}

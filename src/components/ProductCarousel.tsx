@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
 import ProductCard from './ProductCard';
-import Button from './Button';
 
 interface ProductCarouselProps {
   title: string;

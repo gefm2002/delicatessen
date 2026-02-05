@@ -14,7 +14,6 @@ import AdminSiteConfig from './pages/admin/AdminSiteConfig';
 import AdminOrders from './pages/admin/AdminOrders';
 import Layout from './components/Layout';
 import AdminLayout from './components/admin/AdminLayout';
-import WhatsAppButton from './components/WhatsAppButton';
 
 function App() {
   return (

@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react';
 import { apiGet, apiPut, apiPost } from '../../lib/api';
-import { supabaseServer } from '../../lib/supabaseServerDev';
 import { getOrdersDev, getOrderDetailDev, updateOrderStatusDev, addOrderNoteDev } from '../../lib/ordersDev';
-import { keysToCamel } from '../../lib/mappers';
 import { useToast } from '../../context/ToastContext';
 import Button from '../../components/Button';
 import Select from '../../components/Select';
@@ -29,6 +27,7 @@ interface Order {
   total: number;
   status: string;
   notes?: string;
+  whatsappMessage?: string;
   createdAt: string;
   updatedAt: string;
 }

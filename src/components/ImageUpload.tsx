@@ -117,7 +117,7 @@ export default function ImageUpload({
           path = `delicatessen/${entityType}/${entityId || timestamp}/${fileName}`;
 
           // Subir directamente con service role
-          const { data: uploadData, error: uploadError } = await supabaseServer.storage
+          const { error: uploadError } = await supabaseServer.storage
             .from('delicatessen_assets')
             .upload(path, compressedFile, {
               contentType: 'image/webp',
