@@ -1,4 +1,5 @@
 import { Handler } from '@netlify/functions';
+import { getCorsHeaders, handleCors } from './_headers';
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = process.env.SUPABASE_URL!;
@@ -8,7 +9,7 @@ const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
 
 export const handler: Handler = async (event) => {
   if (event.httpMethod !== 'GET') {
-    return { statusCode: 405, body: JSON.stringify({ message: 'Method not allowed' }) };
+    return { statusCode: 405, headers: getCorsHeaders(), body: JSON.stringify({ message: 'Method not allowed' }) };
   }
 
   try {
@@ -16,7 +17,7 @@ export const handler: Handler = async (event) => {
     const path = params.get('path');
 
     if (!path) {
-      return { statusCode: 400, body: JSON.stringify({ message: 'Path requerido' }) };
+      return { statusCode: 400, headers: getCorsHeaders(), body: JSON.stringify({ message: 'Path requerido' }) };
     }
 
     // Generate signed read URL (valid for 1 hour)
@@ -26,7 +27,7 @@ export const handler: Handler = async (event) => {
 
     if (error) {
       console.error('Error creating signed URL:', error);
-      return { statusCode: 500, body: JSON.stringify({ message: 'Error al generar URL', error: error.message }) };
+      return { statusCode: 500, headers: getCorsHeaders(), body: JSON.stringify({ message: 'Error al generar URL', error: error.message }) };
     }
 
     return {

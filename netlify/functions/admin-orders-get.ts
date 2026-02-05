@@ -1,4 +1,5 @@
 import { Handler } from '@netlify/functions';
+import { getCorsHeaders, handleCors } from './_headers';
 import { createClient } from '@supabase/supabase-js';
 import { getAdminFromToken } from './admin-login';
 import { keysToCamel } from '../../src/lib/mappers';
@@ -9,20 +10,23 @@ const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
 
 export const handler: Handler = async (event) => {
+  // Manejar CORS preflight
+  const corsResponse = handleCors(event);
+  if (corsResponse) return corsResponse;
   if (event.httpMethod !== 'GET') {
-    return { statusCode: 405, body: JSON.stringify({ message: 'Method not allowed' }) };
+    return { statusCode: 405, headers: getCorsHeaders(), body: JSON.stringify({ message: 'Method not allowed' }) };
   }
 
   const admin = getAdminFromToken(event);
   if (!admin) {
-    return { statusCode: 401, body: JSON.stringify({ message: 'No autorizado' }) };
+    return { statusCode: 401, headers: getCorsHeaders(), body: JSON.stringify({ message: 'No autorizado' }) };
   }
 
   try {
     const orderId = event.path.split('/').pop();
 
     if (!orderId) {
-      return { statusCode: 400, body: JSON.stringify({ message: 'ID de orden requerido' }) };
+      return { statusCode: 400, headers: getCorsHeaders(), body: JSON.stringify({ message: 'ID de orden requerido' }) };
     }
 
     const { data: order, error: orderError } = await supabase
@@ -32,7 +36,7 @@ export const handler: Handler = async (event) => {
       .single();
 
     if (orderError || !order) {
-      return { statusCode: 404, body: JSON.stringify({ message: 'Orden no encontrada' }) };
+      return { statusCode: 404, headers: getCorsHeaders(), body: JSON.stringify({ message: 'Orden no encontrada' }) };
     }
 
     const { data: events, error: eventsError } = await supabase
