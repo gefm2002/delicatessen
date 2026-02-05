@@ -68,7 +68,11 @@ export const handler: Handler = async (event) => {
     const { email, password } = JSON.parse(event.body || '{}');
 
     if (!email || !password) {
-      return { statusCode: 400, body: JSON.stringify({ message: 'Email y contraseña requeridos' }) };
+      return {
+        statusCode: 400,
+        headers: getCorsHeaders(),
+        body: JSON.stringify({ message: 'Email y contraseña requeridos' }),
+      };
     }
 
     const passwordHash = hashPassword(password);
@@ -82,7 +86,12 @@ export const handler: Handler = async (event) => {
       .single();
 
     if (error || !admin) {
-      return { statusCode: 401, body: JSON.stringify({ message: 'Credenciales inválidas' }) };
+      console.error('Error de autenticación:', error);
+      return {
+        statusCode: 401,
+        headers: getCorsHeaders(),
+        body: JSON.stringify({ message: 'Credenciales inválidas' }),
+      };
     }
 
     const token = createJWT(admin.email);

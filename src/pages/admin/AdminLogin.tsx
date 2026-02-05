@@ -19,8 +19,9 @@ export default function AdminLogin() {
 
     try {
       let result;
-      if (import.meta.env.DEV) {
-        // En desarrollo, usar autenticación directa con Supabase
+      // En desarrollo, usar autenticación directa con Supabase
+      // En producción, usar Netlify Function
+      if (import.meta.env.DEV || import.meta.env.MODE === 'development') {
         result = await adminLoginDev(email, password);
       } else {
         result = await apiPost<{ token: string }>('/admin-login', { email, password });
@@ -28,6 +29,7 @@ export default function AdminLogin() {
       localStorage.setItem('admin_token', result.token);
       navigate('/admin/dashboard');
     } catch (err: any) {
+      console.error('Error en login:', err);
       setError(err.message || 'Error al iniciar sesión');
     } finally {
       setLoading(false);
