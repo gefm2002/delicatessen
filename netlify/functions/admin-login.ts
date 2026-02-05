@@ -1,6 +1,7 @@
 import { Handler } from '@netlify/functions';
 import { createClient } from '@supabase/supabase-js';
 import * as crypto from 'crypto';
+import { getCorsHeaders, handleCors } from './_headers';
 
 const supabaseUrl = process.env.SUPABASE_URL!;
 const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
@@ -51,8 +52,16 @@ export function getAdminFromToken(event: any): { email: string } | null {
 }
 
 export const handler: Handler = async (event) => {
+  // Manejar CORS preflight
+  const corsResponse = handleCors(event);
+  if (corsResponse) return corsResponse;
+
   if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, body: JSON.stringify({ message: 'Method not allowed' }) };
+    return {
+      statusCode: 405,
+      headers: getCorsHeaders(),
+      body: JSON.stringify({ message: 'Method not allowed' }),
+    };
   }
 
   try {
@@ -80,12 +89,14 @@ export const handler: Handler = async (event) => {
 
     return {
       statusCode: 200,
+      headers: getCorsHeaders(),
       body: JSON.stringify({ token, email: admin.email }),
     };
   } catch (error: any) {
     console.error('Error:', error);
     return {
       statusCode: 500,
+      headers: getCorsHeaders(),
       body: JSON.stringify({ message: 'Error interno del servidor', error: error.message }),
     };
   }

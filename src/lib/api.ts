@@ -7,12 +7,23 @@ export async function apiFetch(
   options: RequestInit = {}
 ): Promise<Response> {
   const url = `${API_BASE}${endpoint}`;
+  
+  // Obtener token del localStorage si existe (para admin)
+  const token = typeof window !== 'undefined' ? localStorage.getItem('admin_token') : null;
+  
+  const headers: HeadersInit = {
+    'Content-Type': 'application/json',
+    ...options.headers,
+  };
+  
+  // Agregar token de autenticación si existe
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  
   const response = await fetch(url, {
     ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
+    headers,
   });
 
   if (!response.ok) {
