@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabasePublic';
 import { keysToCamel } from '../lib/mappers';
 import Button from '../components/Button';
+import ProductCard from '../components/ProductCard';
+import ProductCarousel from '../components/ProductCarousel';
 
 interface Category {
   id: string;
@@ -66,6 +68,9 @@ export default function Home() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [promos, setPromos] = useState<Promo[]>([]);
   const [featuredProducts, setFeaturedProducts] = useState<any[]>([]);
+  const [promoProducts, setPromoProducts] = useState<any[]>([]);
+  const [offerProducts, setOfferProducts] = useState<any[]>([]);
+  const [newProducts, setNewProducts] = useState<any[]>([]);
 
   useEffect(() => {
     loadData();
@@ -89,15 +94,46 @@ export default function Home() {
 
     if (promosData) setPromos(promosData.map(keysToCamel));
 
-    const { data: products } = await supabase
+    // Productos destacados (boxes)
+    const { data: featured } = await supabase
       .from('delicatessen_products')
       .select('*')
       .eq('is_active', true)
       .eq('is_featured', true)
       .eq('product_type', 'combo')
-      .limit(6);
+      .limit(10);
 
-    if (products) setFeaturedProducts(products.map(keysToCamel));
+    if (featured) setFeaturedProducts(featured.map(keysToCamel));
+
+    // Productos en promoción
+    const { data: promo } = await supabase
+      .from('delicatessen_products')
+      .select('*')
+      .eq('is_active', true)
+      .eq('is_promo', true)
+      .limit(10);
+
+    if (promo) setPromoProducts(promo.map(keysToCamel));
+
+    // Productos en oferta
+    const { data: offers } = await supabase
+      .from('delicatessen_products')
+      .select('*')
+      .eq('is_active', true)
+      .eq('is_offer', true)
+      .limit(10);
+
+    if (offers) setOfferProducts(offers.map(keysToCamel));
+
+    // Productos nuevos (últimos agregados)
+    const { data: newProds } = await supabase
+      .from('delicatessen_products')
+      .select('*')
+      .eq('is_active', true)
+      .order('created_at', { ascending: false })
+      .limit(10);
+
+    if (newProds) setNewProducts(newProds.map(keysToCamel));
   }
 
   return (
@@ -167,36 +203,44 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Boxes */}
+      {/* Carrusel de Productos Destacados */}
       {featuredProducts.length > 0 && (
-        <section className="bg-bg-alt py-12">
-          <div className="container mx-auto px-4">
-            <h2 className="text-3xl font-display font-bold mb-8 text-center">Boxes para regalar</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {featuredProducts.map((product) => (
-                <Link
-                  key={product.id}
-                  to={`/producto/${product.slug}`}
-                  className="bg-bg rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
-                >
-                  <div className="relative h-48 bg-bg-alt overflow-hidden">
-                    <ProductImage 
-                      src={product.images && product.images[0] ? product.images[0] : null}
-                      alt={product.name}
-                      fallback="/images/boxes/boxes.jpg"
-                    />
-                  </div>
-                  <div className="p-4">
-                    <h3 className="font-medium text-text mb-2">{product.name}</h3>
-                    <p className="text-primary font-bold text-lg">
-                      ${product.price?.toLocaleString('es-AR')}
-                    </p>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
+        <div className="bg-bg-alt">
+          <ProductCarousel
+            title="⭐ Productos Destacados"
+            products={featuredProducts}
+            showQuickAdd={true}
+          />
+        </div>
+      )}
+
+      {/* Carrusel de Promociones */}
+      {promoProducts.length > 0 && (
+        <ProductCarousel
+          title="🔥 En Promoción"
+          products={promoProducts}
+          showQuickAdd={true}
+        />
+      )}
+
+      {/* Carrusel de Ofertas */}
+      {offerProducts.length > 0 && (
+        <div className="bg-bg-alt">
+          <ProductCarousel
+            title="💥 Ofertas Especiales"
+            products={offerProducts}
+            showQuickAdd={true}
+          />
+        </div>
+      )}
+
+      {/* Carrusel de Nuevos Productos */}
+      {newProducts.length > 0 && (
+        <ProductCarousel
+          title="🆕 Productos Nuevos"
+          products={newProducts}
+          showQuickAdd={true}
+        />
       )}
 
       {/* Promos */}

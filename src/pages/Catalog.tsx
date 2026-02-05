@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { supabase } from '../lib/supabasePublic';
 import { keysToCamel } from '../lib/mappers';
-import Badge from '../components/Badge';
+import ProductCard from '../components/ProductCard';
 
 export default function Catalog() {
   const [searchParams] = useSearchParams();
@@ -144,79 +144,7 @@ export default function Catalog() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {products.map((product) => (
-                <Link
-                  key={product.id}
-                  to={`/producto/${product.slug}`}
-                  className="bg-bg rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
-                >
-                  <div className="relative h-48 bg-bg-alt overflow-hidden">
-                    {product.images && product.images[0] ? (
-                      <img
-                        src={product.images[0]}
-                        alt={product.name}
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src = '/images/products/yerba.jpg';
-                        }}
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-text-muted">
-                        <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                      </div>
-                    )}
-                  </div>
-                  <div className="p-4">
-                    <div className="flex items-start justify-between mb-2">
-                      <h3 className="font-medium text-text">{product.name}</h3>
-                      {product.promoBadge && (
-                        <Badge variant="warning">{product.promoBadge}</Badge>
-                      )}
-                    </div>
-                    {product.productType === 'weighted' ? (
-                      <div className="mb-2">
-                        {product.promoPrice ? (
-                          <>
-                            <p className="text-xs line-through text-text-muted">
-                              ${product.pricePerKg?.toLocaleString('es-AR')}/kg
-                            </p>
-                            <p className="text-primary font-bold text-lg">
-                              ${product.promoPrice.toLocaleString('es-AR')}/kg
-                            </p>
-                          </>
-                        ) : (
-                          <p className="text-sm text-text-muted">
-                            ${product.pricePerKg?.toLocaleString('es-AR')}/kg
-                          </p>
-                        )}
-                      </div>
-                    ) : (
-                      <div className="mb-2">
-                        {product.promoPrice ? (
-                          <>
-                            <p className="text-xs line-through text-text-muted">
-                              ${product.price?.toLocaleString('es-AR')}
-                            </p>
-                            <p className="text-primary font-bold text-lg">
-                              ${product.promoPrice.toLocaleString('es-AR')}
-                            </p>
-                          </>
-                        ) : (
-                          <p className="text-primary font-bold text-lg">
-                            ${product.price?.toLocaleString('es-AR')}
-                          </p>
-                        )}
-                      </div>
-                    )}
-                    <div className="flex flex-wrap gap-1 mt-2">
-                      {product.isPromo && <Badge variant="warning" className="text-xs">Promo</Badge>}
-                      {product.isOffer && <Badge variant="secondary" className="text-xs">Oferta</Badge>}
-                      {product.isFeatured && <Badge variant="primary" className="text-xs">Destacado</Badge>}
-                      {!product.hasStock && <Badge variant="error" className="text-xs">Sin stock</Badge>}
-                    </div>
-                  </div>
-                </Link>
+                <ProductCard key={product.id} product={product} showQuickAdd={true} />
               ))}
             </div>
           )}
