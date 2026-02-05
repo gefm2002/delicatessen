@@ -11,9 +11,9 @@ export async function apiFetch(
   // Obtener token del localStorage si existe (para admin)
   const token = typeof window !== 'undefined' ? localStorage.getItem('admin_token') : null;
   
-  const headers: HeadersInit = {
+  const headers: Record<string, string> = {
     'Content-Type': 'application/json',
-    ...options.headers,
+    ...(options.headers as Record<string, string> || {}),
   };
   
   // Agregar token de autenticación si existe
